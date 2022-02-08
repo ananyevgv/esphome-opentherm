@@ -139,38 +139,14 @@ sensor:
     accuracy_decimals: 2
     timeout: 5s
     filters:
-      - multiply: 0.0015151515151515
+      - multiply: 0.00076
     total:
       name: "${devicename} l"
       id: water_drink_filter
       unit_of_measurement: "L"
       accuracy_decimals: 3
       filters:
-        - multiply: 0.0015151515151515 #0.0909090909090909
-
-
-    
-  - platform: resistance
-    id: water_resistance
-    sensor: water_sensor
-    configuration: DOWNSTREAM
-    resistor: 51kOhm
-    name: water_resistance
-  - platform: adc
-    id: water_sensor
-    pin: A0
-    update_interval: 5s
-    filters:
-      - multiply: 3.3
-    
-  - platform: ntc
-    sensor: water_resistance
-    calibration:
-      b_constant: 3950
-      reference_temperature: 25°C
-      reference_resistance: 50kOhm
-    name: "${devicename} water T"
-    id: water_t
+        - multiply: 0.00076
 
   - platform: homeassistant
     name: "water_total"
@@ -194,30 +170,17 @@ display:
       it.set_intensity(static_cast<int>(id(brightness).state));
       static int i = 0;
       i++;
-      if ((id(potok).state) > 0) {
-        it.printf(4,"4321");
-        it.printf("%.1fL" , id(water_drink_filter).state);
-        it.printf(12,"%.1fc" , id(water_t).state);
-        it.printf(16,"%.1fc" , id(water_t).state);
-        it.printf(20,"%.1fh" , id(kitchen_h).state);
-       
-        if ((i % 2) == 0) 
-          it.strftime(8,"%H.%M", id(sntp_time).now());
-        else 
-          it.strftime(8,"%H%M", id(sntp_time).now()); 
-          
-      } else {
-        it.printf(4,"1234");
-        it.printf("%.1fL" , id(drink_water_yearly).state);
+
+        it.printf(8,"%.1fL" , id(drink_water_yearly).state);
         it.strftime(14,"%S", id(sntp_time).now());
         it.printf(16,"%.1fc" , id(kitchen_t).state);
         it.printf(20,"%.1fh" , id(kitchen_h).state);
 
         if ((i % 2) == 0) 
-          it.strftime(8,"%H.%M", id(sntp_time).now());
+          it.strftime(0,"%H.%M", id(sntp_time).now());
         else 
-          it.strftime(8,"%H%M", id(sntp_time).now()); 
-      }
+          it.strftime(0,"%H%M", id(sntp_time).now()); 
+
 
       
 #Stream server for ESPHome
@@ -227,7 +190,7 @@ external_components:
   
 stream_server:
    uart_id: uart_bus
-   port: 6638 
+   port: 6638 #4001
 
 # Enable Web server.
 web_server:
@@ -241,4 +204,5 @@ time:
   - platform: sntp
     id: sntp_time
     timezone: "MSK-3MSD,M3.5.0/2,M10.5.0/3"
-    servers: 192.168.xx.xx
+    servers: 192.168.xxx.xxx
+
